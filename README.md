@@ -72,17 +72,55 @@ npx hardhat test
 
 ## Smart Contracts
 
-### MockToken
+### MockToken (`contracts/MockToken.sol`)
 
-A simple ERC-20 token used for staking and rewards.
+A professional ERC-20 token implementation used for staking and rewards.
 
-### StakingContract
+**Key Features:**
+- Standard ERC-20 functionality (transfer, approve, transferFrom)
+- 18 decimal places for high precision
+- Minting capability restricted to the contract owner
+- Comprehensive input validation
+- Detailed NatSpec documentation
 
-The main staking contract that allows users to:
-- Stake tokens
-- Unstake tokens
-- Earn rewards based on staking duration
-- Claim accumulated rewards
+**Constructor Parameters:**
+- `name`: The name of the token (e.g., "Quantlink Token")
+- `symbol`: The symbol of the token (e.g., "QNTL")
+- `initialSupply`: The initial supply of tokens to mint to the deployer
+
+**Key Functions:**
+- `mint(address to, uint256 amount)`: Creates new tokens and assigns them to the specified address
+- Standard ERC-20 functions: `transfer`, `approve`, `transferFrom`, `balanceOf`, etc.
+
+### StakingContract (`contracts/StakingContract.sol`)
+
+A sophisticated staking contract that implements a time-based reward distribution system.
+
+**Key Features:**
+- Secure token staking and unstaking
+- Time-weighted reward calculation
+- Proportional reward distribution based on stake amount
+- Reentrancy protection for all state-changing functions
+- Comprehensive input validation
+- Detailed NatSpec documentation
+
+**Constructor Parameters:**
+- `_stakingToken`: The ERC-20 token that will be staked and used for rewards
+- `_rewardRate`: Initial reward rate per second (in tokens, with 18 decimal precision)
+
+**Key Functions:**
+- `stake(uint256 amount)`: Allows users to stake tokens
+- `unstake(uint256 amount)`: Allows users to unstake tokens
+- `claimReward()`: Allows users to claim accumulated rewards
+- `earned(address account)`: Calculates the rewards earned by an account
+- `getEstimatedDailyRewards(address account)`: Estimates daily rewards for an account
+- `setRewardRate(uint256 _rewardRate)`: Allows the owner to update the reward rate
+
+**Reward Calculation:**
+The contract uses a sophisticated reward calculation formula that:
+1. Tracks the time elapsed since the last update
+2. Calculates rewards based on the user's proportion of the total staked amount
+3. Accumulates rewards over time, allowing users to claim at any point
 
 ## Usage
 
