@@ -124,74 +124,229 @@ The contract uses a sophisticated reward calculation formula that:
 
 ## Usage
 
-### Deploying Contracts
+### Deployment Workflow
 
-1. Deploy the MockToken:
+#### 1. Deploy to Sepolia Testnet
+
+Follow these steps to deploy the contracts to the Sepolia testnet:
+
+1. **Deploy the MockToken**:
 ```bash
 npx hardhat run scripts/01-deploy-mock-token.js --network sepolia
 ```
+This will:
+- Deploy the MockToken contract to Sepolia
+- Mint the initial supply to your wallet
+- Verify the contract on Etherscan (if API key is provided)
+- Output the deployed contract address
 
-2. Set the token address in your `.env` file:
+2. **Set the token address in your `.env` file**:
 ```
 TOKEN_ADDRESS=deployed_token_address
 ```
 
-3. Deploy the StakingContract:
+3. **Deploy the StakingContract**:
 ```bash
 npx hardhat run scripts/02-deploy-staking-contract.js --network sepolia
 ```
+This will:
+- Deploy the StakingContract with your MockToken as the staking token
+- Set the initial reward rate
+- Verify the contract on Etherscan (if API key is provided)
+- Output the deployed contract address
 
-4. Set the staking contract address in your `.env` file:
+4. **Set the staking contract address in your `.env` file**:
 ```
 STAKING_CONTRACT_ADDRESS=deployed_staking_contract_address
 ```
 
+5. **Fund the staking contract with reward tokens**:
+You'll need to transfer some tokens to the staking contract to be used as rewards. You can do this using a wallet like MetaMask or by creating a custom script.
+
+#### 2. Local Development and Testing
+
+For local development and testing, you can use the provided setup script:
+
+```bash
+# Start a local Hardhat node in one terminal
+npx hardhat node
+
+# In another terminal, run the setup script
+npx hardhat run scripts/setup-env.js --network localhost
+```
+
+This will:
+- Deploy both contracts to your local Hardhat network
+- Set up the necessary environment variables in `.env.local`
+- Fund the staking contract with tokens for rewards
+
 ### Interacting with Contracts
 
+The project includes several scripts to interact with the deployed contracts:
+
 #### Approving Tokens for Staking
+Before staking, you need to approve the StakingContract to spend your tokens:
+
 ```bash
+# Approve the default amount (1000 tokens)
 npx hardhat run scripts/03-approve-tokens.js --network sepolia
-```
-You can specify the amount to approve as a command-line argument:
-```bash
+
+# Or specify a custom amount
 npx hardhat run scripts/03-approve-tokens.js --network sepolia 500
 ```
 
 #### Staking Tokens
+After approval, you can stake your tokens:
+
 ```bash
+# Stake the default amount (100 tokens)
 npx hardhat run scripts/04-stake-tokens.js --network sepolia
-```
-You can specify the amount to stake as a command-line argument:
-```bash
+
+# Or specify a custom amount
 npx hardhat run scripts/04-stake-tokens.js --network sepolia 100
 ```
 
 #### Unstaking Tokens
+To withdraw your staked tokens:
+
 ```bash
+# Unstake the default amount (50 tokens)
 npx hardhat run scripts/05-unstake-tokens.js --network sepolia
-```
-You can specify the amount to unstake as a command-line argument:
-```bash
+
+# Or specify a custom amount
 npx hardhat run scripts/05-unstake-tokens.js --network sepolia 50
 ```
 
 #### Checking Rewards
+To check your earned rewards:
+
 ```bash
 npx hardhat run scripts/06-check-rewards.js --network sepolia
 ```
 
+This will show:
+- Your current staked balance
+- Your earned rewards
+- The current reward rate
+- Estimated daily rewards
+
 #### Claiming Rewards
+To claim your accumulated rewards:
+
 ```bash
 npx hardhat run scripts/07-claim-rewards.js --network sepolia
 ```
 
+### Using npm Scripts
+
+For convenience, the project includes npm scripts for common operations:
+
+```bash
+# Run tests
+npm test
+
+# Start a local node
+npm run node
+
+# Set up local environment
+npm run setup-local
+
+# Deploy token to the selected network
+npm run deploy-token -- --network sepolia
+
+# Deploy staking contract to the selected network
+npm run deploy-staking -- --network sepolia
+
+# Approve tokens
+npm run approve -- --network sepolia
+
+# Stake tokens
+npm run stake -- --network sepolia
+
+# Unstake tokens
+npm run unstake -- --network sepolia
+
+# Check rewards
+npm run check-rewards -- --network sepolia
+
+# Claim rewards
+npm run claim-rewards -- --network sepolia
+```
+
 ## Testing
 
-Run the test suite:
+The project includes a comprehensive test suite that covers all contract functionality:
+
 ```bash
+# Run all tests
 npx hardhat test
+
+# Run tests with gas reporting
+REPORT_GAS=true npx hardhat test
 ```
+
+The test suite includes tests for:
+- Contract deployment and initialization
+- Staking functionality
+- Unstaking functionality
+- Reward calculation and distribution
+- Error handling and edge cases
+
+## Contract Architecture
+
+The staking system follows a simple but effective architecture:
+
+```
+User
+ │
+ ├── Approves tokens ──────┐
+ │                         │
+ │                         ▼
+ │                  ┌─────────────┐
+ │                  │  MockToken  │
+ │                  └─────────────┘
+ │                         │
+ │                         │ Transfers tokens
+ │                         │
+ │                         ▼
+ ├── Stakes/Unstakes ─► ┌─────────────────┐
+ │                      │ StakingContract │
+ │                      └─────────────────┘
+ │                         │
+ └── Claims rewards ◄──────┘
+```
+
+## Security Considerations
+
+The contracts implement several security best practices:
+
+1. **Reentrancy Protection**: All state-changing functions use the `nonReentrant` modifier
+2. **Safe Token Transfers**: Uses OpenZeppelin's `SafeERC20` for all token operations
+3. **Input Validation**: Comprehensive validation of all function inputs
+4. **Access Control**: Owner-restricted functions for sensitive operations
+5. **State Updates Before Transfers**: Updates state variables before external calls
+6. **Event Emission**: Events for all important state changes
+
+## Future Enhancements
+
+Potential enhancements for a production version:
+
+1. **Time-Locked Staking**: Add minimum staking periods with higher rewards
+2. **Staking Tiers**: Different reward rates based on amount staked
+3. **Governance Integration**: Allow token holders to vote on reward rates
+4. **Multi-Token Support**: Allow staking of multiple token types
+5. **Reward Boosting**: NFT-based or time-based reward multipliers
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## Acknowledgements
+
+- [OpenZeppelin](https://openzeppelin.com/) for secure contract libraries
+- [Hardhat](https://hardhat.org/) for the Ethereum development environment
+- [Ethers.js](https://docs.ethers.io/) for the Ethereum JavaScript API
