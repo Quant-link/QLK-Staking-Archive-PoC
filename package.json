@@ -1,0 +1,27 @@
+{
+  "name": "quantlink-basic-staking-poc",
+  "version": "1.0.0",
+  "description": "Proof-of-concept for a simple staking smart contract on an Ethereum Testnet (Sepolia). Includes scripts for deploying, staking, and unstaking mock tokens, demonstrating basic on-chain interaction.",
+  "main": "index.js",
+  "scripts": {
+    "test": "hardhat test",
+    "node": "hardhat node",
+    "setup-local": "hardhat run scripts/setup-env.js --network localhost",
+    "deploy-token": "hardhat run scripts/01-deploy-mock-token.js",
+    "deploy-staking": "hardhat run scripts/02-deploy-staking-contract.js",
+    "approve": "hardhat run scripts/03-approve-tokens.js",
+    "stake": "hardhat run scripts/04-stake-tokens.js",
+    "unstake": "hardhat run scripts/05-unstake-tokens.js",
+    "check-rewards": "hardhat run scripts/06-check-rewards.js",
+    "claim-rewards": "hardhat run scripts/07-claim-rewards.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@openzeppelin/contracts": "^5.3.0",
+    "dotenv": "^16.5.0",
+    "hardhat": "^2.24.0"
+  }
+}
